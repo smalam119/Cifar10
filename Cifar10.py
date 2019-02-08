@@ -1,6 +1,8 @@
+import sys
 import tarfile
 import os
 import numpy as np
+import Cons
 
 
 class Cifar10:
@@ -14,17 +16,35 @@ class Cifar10:
         self._training_images = value
 
     @property
+    def training_label(self):
+        return self._training_label
+
+    @training_label.setter
+    def training_label(self, value):
+        self._training_label = value
+
+    @property
     def test_images(self):
         return self._test_images
 
     @training_images.setter
-    def training_images(self, value):
+    def test_images(self, value):
         self._test_images = value
 
-    def __init__(self):
+    @property
+    def test_label(self):
+        return self._test_label
+
+    @test_label.setter
+    def test_label(self, value):
+        self._test_label = value
+
+    def __init__(self, path):
         self._training_images = []
+        self._training_label = []
         self._test_images = []
-        self._load_cifar10_images("/Users/user/PycharmProjects")
+        self._test_label = []
+        self._load_cifar10_images(path)
 
     def _load_cifar10_images(self, path):
         tar = 'cifar-10-binary.tar.gz'
@@ -68,12 +88,12 @@ class Cifar10:
 
         # Split into train and test
         Cifar10.training_images, Cifar10.test_images = images[:50000], images[50000:]
-        train_labels, test_labels = labels[:50000], labels[50000:]
+        Cifar10.training_label, Cifar10.test_label = labels[:50000], labels[50000:]
 
     def get_euclidean_distance_between_images(self):
-        f = open("/Users/user/PycharmProjects/result.txt", "x")
-        for x in np.nditer(Cifar10.training_images):
-            for y in np.nditer(Cifar10.test_images):
+        f = open(path + "/result.txt", "x")
+        for x in np.nditer(Cifar10.test_images):
+            for y in np.nditer(Cifar10.training_images):
                 dist = Cifar10.calculate_euclidean_distance(self, x, y)
                 f.write(str(dist))
                 f.write("\n")
@@ -82,6 +102,40 @@ class Cifar10:
     def calculate_euclidean_distance(self, x, y):
         return np.sqrt(np.sum((x - y) ** 2))
 
+    def get_accuracy(self):
+        smallest_distance = sys.maxsize
+        label_smallest_distance = 0
+        i = 0
+        j = 0
+        correct_result = 0
+        for x in np.nditer(Cifar10.test_images):
+            for y in np.nditer(Cifar10.training_images):
+                dist = Cifar10.calculate_euclidean_distance(self, x, y)
+                if dist < smallest_distance:
+                    smallest_distance = dist
+                print(i)
+                print(smallest_distance)
+                if smallest_distance == 0:
+                    print("should break")
+                    break
+                else:
+                    print("should continue")
+                    continue
+                break
+            label_smallest_distance = Cifar10.training_label[j]
+            if label_smallest_distance == Cifar10.test_label[i]:
+                correct_result += 1
+            j += 1
+        i += 1
 
-cifar10 = Cifar10()
-# cifar10.get_euclidean_distance_between_images()
+        percentage_correct_result = (correct_result / Cifar10.test_images) * 100
+
+        return percentage_correct_result
+
+
+path = Cons.cifar10_binary_file_path
+
+cifar10 = Cifar10(path)
+np.set_printoptions(threshold=np.inf)
+cifar10.get_accuracy()
+print(cifar10.test_images.size)
