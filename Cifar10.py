@@ -121,6 +121,10 @@ class Cifar10:
 
         return percentage_correct_result
 
+    def get_confusion_matrix(self):
+        confusion_matrix = np.zeros((10, 10), np.int32)
+        return confusion_matrix
+
     def calculate_euclidean_distance(self, x, y):
         return np.sqrt(np.sum((x - y) ** 2))
 
@@ -129,5 +133,6 @@ path = Cons.cifar10_binary_file_path
 
 cifar10 = Cifar10(path)
 # np.set_printoptions(threshold=np.inf)
-cifar10.get_accuracy()
+print(cifar10.get_accuracy())
+#print(cifar10.get_confusion_matrix())
 
