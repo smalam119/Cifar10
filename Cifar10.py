@@ -92,89 +92,42 @@ class Cifar10:
 
     def get_euclidean_distance_between_images(self):
         f = open(path + "/result.txt", "x")
-        for x in np.nditer(Cifar10.test_images):
-            for y in np.nditer(Cifar10.training_images):
-                dist = Cifar10.calculate_euclidean_distance(self, x, y)
+        for x in range(len(Cifar10.test_images)):
+            for y in range(len(Cifar10.training_images)):
+                dist = Cifar10.calculate_euclidean_distance(self, cifar10.test_images[x], cifar10.training_images[y])
                 f.write(str(dist))
                 f.write("\n")
             f.write("...........")
 
-    def calculate_euclidean_distance(self, x, y):
-        return np.sqrt(np.sum((x - y) ** 2))
-
     def get_accuracy(self):
         smallest_distance = sys.maxsize
         label_smallest_distance = 0
-        i = 0
-        j = 0
         correct_result = 0
-        for x in np.nditer(Cifar10.test_images):
-            for y in np.nditer(Cifar10.training_images):
-                dist = Cifar10.calculate_euclidean_distance(self, x, y)
+        for x in range(len(Cifar10.test_images)):
+            for y in range(len(Cifar10.training_images)):
+                dist = Cifar10.calculate_euclidean_distance(self, cifar10.test_images[x], cifar10.training_images[y])
                 if dist < smallest_distance:
                     smallest_distance = dist
-                print(i)
-                print(smallest_distance)
+                    label_smallest_distance = Cifar10.training_label[y]
                 if smallest_distance == 0:
-                    print("should break")
                     break
                 else:
-                    print("should continue")
                     continue
                 break
-            label_smallest_distance = Cifar10.training_label[j]
-            if label_smallest_distance == Cifar10.test_label[i]:
+            if label_smallest_distance == Cifar10.test_label[x]:
                 correct_result += 1
-            j += 1
-        i += 1
 
-        percentage_correct_result = (correct_result / Cifar10.test_images) * 100
+        percentage_correct_result = (correct_result / 10000) * 100
 
         return percentage_correct_result
 
-    def get_accuracy_without_nditer(self):
-        smallest_distance = sys.maxsize
-        label_smallest_distance = 0
-        i = 0
-        j = 0
-        correct_result = 0
-        for x in Cifar10.test_images:
-            for y in Cifar10.training_images:
-                dist = Cifar10.calculate_euclidean_distance(self, x, y)
-                if dist < smallest_distance:
-                    smallest_distance = dist
-                print(i)
-                print(smallest_distance)
-                if smallest_distance == 0:
-                    print("should break")
-                    break
-                else:
-                    print("should continue")
-                    continue
-                break
-            label_smallest_distance = Cifar10.training_label[j]
-            if label_smallest_distance == Cifar10.test_label[i]:
-                correct_result += 1
-            j += 1
-        i += 1
-
-        percentage_correct_result = (correct_result / Cifar10.test_images) * 100
-
-        return percentage_correct_result
+    def calculate_euclidean_distance(self, x, y):
+        return np.sqrt(np.sum((x - y) ** 2))
 
 
 path = Cons.cifar10_binary_file_path
 
 cifar10 = Cifar10(path)
-np.set_printoptions(threshold=np.inf)
-#cifar10.get_accuracy()
-# print(cifar10.training_images[0])
-# print("........................")
-# print(cifar10.test_images[0])
-# print("........................")
-# print(cifar10.calculate_euclidean_distance(cifar10.training_images[0], cifar10.test_images[0]))
-# print(cifar10.test_label[0])
-# print(cifar10.test_label[1])
-# print(cifar10.test_label.size)
-# print(cifar10.test_images.size)
-cifar10.get_accuracy_without_nditer()
+# np.set_printoptions(threshold=np.inf)
+cifar10.get_accuracy()
+
