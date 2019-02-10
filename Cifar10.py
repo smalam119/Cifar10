@@ -123,29 +123,23 @@ class Cifar10:
 
     def get_confusion_matrix(self):
         confusion_matrix = np.zeros((10, 10), np.int32)
-
+        smallest_distance = sys.maxsize
         for x in range(len(Cifar10.test_images)):
             for y in range(len(Cifar10.training_images)):
-                print(x, y)
                 dist = Cifar10.calculate_euclidean_distance(self, cifar10.test_images[x], cifar10.training_images[y])
                 if dist < smallest_distance:
                     smallest_distance = dist
                     predicted_label = Cifar10.training_label[y]
                     actual_label = Cifar10.test_label[x]
                     index = (predicted_label, actual_label)
-                    # insert in confusion matrix
+                    confusion_matrix[index] = confusion_matrix[index] = + 1
+                    print(confusion_matrix)
                 if smallest_distance == 0:
                     break
                 else:
                     continue
                 break
-            if label_smallest_distance == Cifar10.test_label[x]:
-                correct_result += 1
 
-        return confusion_matrix
-
-    def get_confusion_matrix(self):
-        confusion_matrix = np.zeros((10, 10), np.int32)
         return confusion_matrix
 
     def calculate_euclidean_distance(self, x, y):
@@ -157,5 +151,5 @@ path = Cons.cifar10_binary_file_path
 cifar10 = Cifar10(path)
 # np.set_printoptions(threshold=np.inf)
 #print(cifar10.get_accuracy())
-#print(cifar10.get_confusion_matrix())
+print(cifar10.get_confusion_matrix())
 
