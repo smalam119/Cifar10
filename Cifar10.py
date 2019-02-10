@@ -133,12 +133,13 @@ class Cifar10:
                     actual_label = Cifar10.test_label[x]
                     index = (predicted_label, actual_label)
                     confusion_matrix[index] = confusion_matrix[index] = + 1
-                    print(confusion_matrix)
                 if smallest_distance == 0:
                     break
                 else:
                     continue
                 break
+
+        np.savetxt(path + "/confusion_matrix.txt", confusion_matrix)
 
         return confusion_matrix
 
@@ -152,4 +153,5 @@ cifar10 = Cifar10(path)
 # np.set_printoptions(threshold=np.inf)
 #print(cifar10.get_accuracy())
 print(cifar10.get_confusion_matrix())
+#y = np.loadtxt(path + "/result.txt")
 
