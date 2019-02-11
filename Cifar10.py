@@ -148,6 +148,7 @@ class Cifar10:
         false_positive = 0
         shape = np.shape(confusion_matrix)
         row_count = shape[0]
+
         for x in range(row_count):
             if x != label:
                 false_positive += confusion_matrix[label][x]
@@ -156,6 +157,22 @@ class Cifar10:
         print(false_positive)
 
         precision = true_positive / (true_positive + false_positive)
+        return precision
+
+    def get_recall(self, label, confusion_matrix):
+        true_positive = confusion_matrix[label][label]
+        false_negative = 0
+        shape = np.shape(confusion_matrix)
+        col_count = shape[1]
+
+        for y in range(col_count):
+            if y != label:
+                false_negative += confusion_matrix[y][label]
+
+        print(true_positive)
+        print(false_negative)
+
+        precision = true_positive / (true_positive + false_negative)
         return precision
 
     def calculate_euclidean_distance(self, x, y):
@@ -183,4 +200,4 @@ confusion_matrix = [[1, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
 confusion_matrix_simple = [[3, 0, 1],
                            [1, 2, 1],
                            [1, 3, 3]]
-print(cifar10.get_precision(1, confusion_matrix_simple))
+print(cifar10.get_recall(1, confusion_matrix_simple))
