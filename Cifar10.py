@@ -2,6 +2,7 @@ import sys
 import tarfile
 import os
 import numpy as np
+import matplotlib.pyplot as plt
 import Cons
 
 
@@ -173,6 +174,23 @@ class Cifar10:
         f1_score = 2 * (precision * recall) / (precision + recall)
         return f1_score
 
+    def get_specificity(self):
+        return
+
+    def draw_roc_curve(self, confusion_matrix):
+        shape = np.shape(confusion_matrix)
+        col_count = shape[1]
+        sensitivity_array = []
+        specificity_array = [0.0, 0.3, 0.4]
+
+        for x in range(col_count):
+            sensitivity = Cifar10.get_recall(self, x, confusion_matrix)
+            sensitivity_array.append(sensitivity)
+
+        plt.plot(sensitivity_array, specificity_array)
+        plt.show()
+        return
+
 
     def calculate_euclidean_distance(self, x, y):
         return np.sqrt(np.sum((x - y) ** 2))
@@ -189,4 +207,6 @@ cifar10 = Cifar10(path)
 confusion_matrix_simple = [[3, 0, 1],
                            [1, 2, 1],
                            [1, 3, 3]]
-print(cifar10.get_f1_score(0, confusion_matrix_simple))
+#print(cifar10.get_f1_score(0, confusion_matrix_simple))
+
+print(cifar10.draw_roc_curve(confusion_matrix_simple))
