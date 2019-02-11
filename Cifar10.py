@@ -118,7 +118,6 @@ class Cifar10:
                 correct_result += 1
 
         percentage_correct_result = (correct_result / 10000) * 100
-
         return percentage_correct_result
 
     def get_confusion_matrix(self):
@@ -140,7 +139,6 @@ class Cifar10:
                 break
 
         np.savetxt(path + "/confusion_matrix.txt", confusion_matrix)
-
         return confusion_matrix
 
     def get_precision(self, label, confusion_matrix):
@@ -152,9 +150,6 @@ class Cifar10:
         for x in range(row_count):
             if x != label:
                 false_positive += confusion_matrix[label][x]
-
-        print(true_positive)
-        print(false_positive)
 
         precision = true_positive / (true_positive + false_positive)
         return precision
@@ -169,11 +164,15 @@ class Cifar10:
             if y != label:
                 false_negative += confusion_matrix[y][label]
 
-        print(true_positive)
-        print(false_negative)
-
         precision = true_positive / (true_positive + false_negative)
         return precision
+
+    def get_f1_score(self, label, confusion_matrix):
+        precision = cifar10.get_precision(label, confusion_matrix)
+        recall = cifar10.get_recall(label, confusion_matrix)
+        f1_score = 2 * (precision * recall) / (precision + recall)
+        return f1_score
+
 
     def calculate_euclidean_distance(self, x, y):
         return np.sqrt(np.sum((x - y) ** 2))
@@ -187,17 +186,7 @@ cifar10 = Cifar10(path)
 #print(cifar10.get_confusion_matrix())
 #y = np.loadtxt(path + "/confusion_matrix.txt")
 #print(y)
-confusion_matrix = [[1, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
-                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
-                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
-                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
-                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
-                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
-                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
-                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
-                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
-                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.]]
 confusion_matrix_simple = [[3, 0, 1],
                            [1, 2, 1],
                            [1, 3, 3]]
-print(cifar10.get_recall(1, confusion_matrix_simple))
+print(cifar10.get_f1_score(0, confusion_matrix_simple))
