@@ -205,13 +205,15 @@ class Cifar10:
         shape = np.shape(confusion_matrix)
         col_count = shape[1]
         sensitivity_array = []
-        specificity_array = [0.0, 0.3, 0.4]
+        specificity_array = []
 
         for x in range(col_count):
             sensitivity = Cifar10.get_recall(self, x, confusion_matrix)
+            specificity = Cifar10.get_specificity(self, x, confusion_matrix)
             sensitivity_array.append(sensitivity)
+            specificity_array.append(specificity)
 
-        plt.plot(sensitivity_array, specificity_array)
+        plt.plot(specificity_array, sensitivity_array)
         plt.show()
         return
 
@@ -230,6 +232,4 @@ confusion_matrix_simple = [[3, 0, 1],
                            [1, 2, 1],
                            [1, 3, 3]]
 
-#print(cifar10.draw_roc_curve(confusion_matrix_simple))
-
-print(cifar10.get_specificity(0, confusion_matrix_simple))
+print(cifar10.draw_roc_curve(confusion_matrix_simple))
