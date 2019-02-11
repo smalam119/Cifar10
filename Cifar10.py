@@ -174,8 +174,32 @@ class Cifar10:
         f1_score = 2 * (precision * recall) / (precision + recall)
         return f1_score
 
-    def get_specificity(self):
-        return
+    def get_true_negative(self, label, confusion_matrix):
+        shape = np.shape(confusion_matrix)
+        col_count = shape[1]
+        row_count = shape[0]
+        true_negative = 0
+        for j in range(col_count):
+            for i in range(row_count):
+                if j != label:
+                    if i != label:
+                        true_negative += confusion_matrix[i][j]
+
+        return true_negative
+
+    def get_specificity(self, label, confusion_matrix):
+        true_negative = Cifar10.get_true_negative(self, label, confusion_matrix)
+        false_positive = 0
+        shape = np.shape(confusion_matrix)
+        row_count = shape[0]
+
+        for x in range(row_count):
+            if x != label:
+                false_positive += confusion_matrix[label][x]
+
+        specificity = true_negative / (true_negative + false_positive)
+        return specificity
+
 
     def draw_roc_curve(self, confusion_matrix):
         shape = np.shape(confusion_matrix)
@@ -200,13 +224,12 @@ path = Cons.cifar10_binary_file_path
 
 cifar10 = Cifar10(path)
 # np.set_printoptions(threshold=np.inf)
-#print(cifar10.get_accuracy())
 #print(cifar10.get_confusion_matrix())
 #y = np.loadtxt(path + "/confusion_matrix.txt")
-#print(y)
 confusion_matrix_simple = [[3, 0, 1],
                            [1, 2, 1],
                            [1, 3, 3]]
-#print(cifar10.get_f1_score(0, confusion_matrix_simple))
 
-print(cifar10.draw_roc_curve(confusion_matrix_simple))
+#print(cifar10.draw_roc_curve(confusion_matrix_simple))
+
+print(cifar10.get_specificity(0, confusion_matrix_simple))
