@@ -132,7 +132,7 @@ class Cifar10:
                     predicted_label = Cifar10.training_label[y]
                     actual_label = Cifar10.test_label[x]
                     index = (predicted_label, actual_label)
-                    confusion_matrix[index] = confusion_matrix[index] = + 1
+                    confusion_matrix[index] = confusion_matrix[index] + 1
                 if smallest_distance == 0:
                     break
                 else:
@@ -143,6 +143,21 @@ class Cifar10:
 
         return confusion_matrix
 
+    def get_precision(self, label, confusion_matrix):
+        true_positive = confusion_matrix[label][label]
+        false_positive = 0
+        shape = np.shape(confusion_matrix)
+        row_count = shape[0]
+        for x in range(row_count):
+            if x != label:
+                false_positive += confusion_matrix[label][x]
+
+        print(true_positive)
+        print(false_positive)
+
+        precision = true_positive / (true_positive + false_positive)
+        return precision
+
     def calculate_euclidean_distance(self, x, y):
         return np.sqrt(np.sum((x - y) ** 2))
 
@@ -152,6 +167,20 @@ path = Cons.cifar10_binary_file_path
 cifar10 = Cifar10(path)
 # np.set_printoptions(threshold=np.inf)
 #print(cifar10.get_accuracy())
-print(cifar10.get_confusion_matrix())
-#y = np.loadtxt(path + "/result.txt")
-
+#print(cifar10.get_confusion_matrix())
+#y = np.loadtxt(path + "/confusion_matrix.txt")
+#print(y)
+confusion_matrix = [[1, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
+                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
+                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
+                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
+                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
+                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
+                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
+                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
+                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.],
+                    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0.]]
+confusion_matrix_simple = [[3, 0, 1],
+                           [1, 2, 1],
+                           [1, 3, 3]]
+print(cifar10.get_precision(1, confusion_matrix_simple))
