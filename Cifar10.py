@@ -165,8 +165,8 @@ class Cifar10:
             if y != label:
                 false_negative += confusion_matrix[y][label]
 
-        precision = true_positive / (true_positive + false_negative)
-        return precision
+        recall = true_positive / (true_positive + false_negative)
+        return recall
 
     def get_f1_score(self, label, confusion_matrix):
         precision = cifar10.get_precision(label, confusion_matrix)
@@ -214,6 +214,8 @@ class Cifar10:
             specificity_array.append(specificity)
 
         plt.plot(specificity_array, sensitivity_array)
+        plt.ylabel('Sensitivity')
+        plt.xlabel('Specificity')
         plt.show()
         return
 
@@ -227,9 +229,9 @@ path = Cons.cifar10_binary_file_path
 cifar10 = Cifar10(path)
 # np.set_printoptions(threshold=np.inf)
 #print(cifar10.get_confusion_matrix())
-#y = np.loadtxt(path + "/confusion_matrix.txt")
-confusion_matrix_simple = [[3, 0, 1],
-                           [1, 2, 1],
-                           [1, 3, 3]]
+y = np.loadtxt(path + "/confusion_matrix.txt")
+# confusion_matrix_simple = [[3, 0, 1],
+#                            [1, 2, 1],
+#                            [1, 3, 3]]
 
-print(cifar10.draw_roc_curve(confusion_matrix_simple))
+print(cifar10.draw_roc_curve(y))
