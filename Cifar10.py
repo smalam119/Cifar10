@@ -2,6 +2,7 @@ import sys
 import tarfile
 import os
 import numpy as np
+import matplotlib.pyplot as plt
 import Cons
 
 
@@ -118,12 +119,106 @@ class Cifar10:
                 correct_result += 1
 
         percentage_correct_result = (correct_result / 10000) * 100
-
         return percentage_correct_result
 
     def get_confusion_matrix(self):
         confusion_matrix = np.zeros((10, 10), np.int32)
+        smallest_distance = sys.maxsize
+        for x in range(len(Cifar10.test_images)):
+            for y in range(len(Cifar10.training_images)):
+                dist = Cifar10.calculate_euclidean_distance(self, cifar10.test_images[x], cifar10.training_images[y])
+                if dist < smallest_distance:
+                    smallest_distance = dist
+                    predicted_label = Cifar10.training_label[y]
+                    actual_label = Cifar10.test_label[x]
+                    index = (predicted_label, actual_label)
+                    confusion_matrix[index] = confusion_matrix[index] + 1
+                if smallest_distance == 0:
+                    break
+                else:
+                    continue
+                break
+
+        np.savetxt(path + "/confusion_matrix.txt", confusion_matrix)
         return confusion_matrix
+
+    def get_precision(self, label, confusion_matrix):
+        true_positive = confusion_matrix[label][label]
+        false_positive = 0
+        shape = np.shape(confusion_matrix)
+        row_count = shape[0]
+
+        for x in range(row_count):
+            if x != label:
+                false_positive += confusion_matrix[label][x]
+
+        precision = true_positive / (true_positive + false_positive)
+        return precision
+
+    def get_recall(self, label, confusion_matrix):
+        true_positive = confusion_matrix[label][label]
+        false_negative = 0
+        shape = np.shape(confusion_matrix)
+        col_count = shape[1]
+
+        for y in range(col_count):
+            if y != label:
+                false_negative += confusion_matrix[y][label]
+
+        recall = true_positive / (true_positive + false_negative)
+        return recall
+
+    def get_f1_score(self, label, confusion_matrix):
+        precision = cifar10.get_precision(label, confusion_matrix)
+        recall = cifar10.get_recall(label, confusion_matrix)
+        f1_score = 2 * (precision * recall) / (precision + recall)
+        return f1_score
+
+    def get_true_negative(self, label, confusion_matrix):
+        shape = np.shape(confusion_matrix)
+        col_count = shape[1]
+        row_count = shape[0]
+        true_negative = 0
+        for j in range(col_count):
+            for i in range(row_count):
+                if j != label:
+                    if i != label:
+                        true_negative += confusion_matrix[i][j]
+
+        return true_negative
+
+    def get_specificity(self, label, confusion_matrix):
+        true_negative = Cifar10.get_true_negative(self, label, confusion_matrix)
+        false_positive = 0
+        shape = np.shape(confusion_matrix)
+        row_count = shape[0]
+
+        for x in range(row_count):
+            if x != label:
+                false_positive += confusion_matrix[label][x]
+
+        specificity = true_negative / (true_negative + false_positive)
+        return specificity
+
+
+    def draw_roc_curve(self, confusion_matrix):
+        shape = np.shape(confusion_matrix)
+        col_count = shape[1]
+        sensitivity_array = []
+        specificity_array = []
+
+        for x in range(col_count):
+            sensitivity = Cifar10.get_recall(self, x, confusion_matrix)
+            specificity = Cifar10.get_specificity(self, x, confusion_matrix)
+            sensitivity_array.append(sensitivity)
+            specificity_array.append(specificity)
+
+        plt.plot(specificity_array, sensitivity_array)
+        plt.ylabel('Sensitivity')
+        plt.xlabel('Specificity')
+        plt.show()
+        return
+
 
     def calculate_euclidean_distance(self, x, y):
         return np.sqrt(np.sum((x - y) ** 2))
@@ -133,6 +228,10 @@ path = Cons.cifar10_binary_file_path
 
 cifar10 = Cifar10(path)
 # np.set_printoptions(threshold=np.inf)
-print(cifar10.get_accuracy())
 #print(cifar10.get_confusion_matrix())
+y = np.loadtxt(path + "/confusion_matrix.txt")
+# confusion_matrix_simple = [[3, 0, 1],
+#                            [1, 2, 1],
+#                            [1, 3, 3]]
 
+print(cifar10.draw_roc_curve(y))
