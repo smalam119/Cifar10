@@ -27,7 +27,11 @@ class ClassificationMetrics:
         return
 
     def calculate_accuracy(self):
-        return
+        true_positive = self.confusion_matrix[0][0]
+        true_negative = self.confusion_matrix[1][1]
+        total = self.confusion_matrix[0][0] + self.confusion_matrix[0][1] + self.confusion_matrix[1][0] + self.confusion_matrix[1][1]
+        accuracy = (true_negative + true_positive) / total
+        return accuracy
 
     def calculate_precision(self):
         true_positive = self.confusion_matrix[0][0]
@@ -53,7 +57,7 @@ class ClassificationMetrics:
         specificity = true_negative / (true_negative + false_positive)
         return specificity
 
-    def calculate_roc_values(self):
+    def calculate_roc_values(self, thresholds):
         return
 
     def calculate_lift_values(self):
